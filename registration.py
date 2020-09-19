@@ -190,7 +190,7 @@ def correlation(I, J):
     v = v - v.mean(keepdims=True)
 
     #------------------------------------------------------------------#
-    CC = np.dot(np.transpose(u),v)/np.sqrt(np.dot(np.transpose(u),u))/np.sqrt(np.dot(np.transpose(v),v))
+    CC = (np.transpose(u).dot(v))/(np.sqrt(np.transpose(u).dot(u)).dot(np.sqrt(np.transpose(v).dot(v))))
     #------------------------------------------------------------------#
 
     return CC
@@ -241,6 +241,7 @@ def joint_histogram(I, J, num_bins=16, minmax_range=None):
     # intensities in the two images. You need to implement one final
     # step to make p take the form of a probability mass function
     # (p.m.f.).
+    p=p/n
     #------------------------------------------------------------------#
 
     return p
@@ -272,6 +273,7 @@ def mutual_information(p):
     # can use a for-loop instead.
     # HINT: p_I is a column-vector and p_J is a row-vector so their
     # product is a matrix. You can also use the sum() function here.
+    MI = np.sum(np.sum(p*(np.log(p/(p_I.dot(p_J))))))
     #------------------------------------------------------------------#
 
     return MI
@@ -301,6 +303,10 @@ def mutual_information_e(p):
     #------------------------------------------------------------------#
     # TODO: Implement the computation of the mutual information via
     # computation of entropy.
+    H_I = -np.sum(p_I*np.log(p_I))
+    H_J = -np.sum(p_J*np.log(p_J))
+    H_IJ = -np.sum(p*np.log(p))
+    MI = H_I + H_J - H_IJ
     #------------------------------------------------------------------#
 
     return MI
@@ -324,6 +330,13 @@ def ngradient(fun, x, h=1e-3):
     # TODO: Implement the  computation of the partial derivatives of
     # the function at x with numerical differentiation.
     # g[k] should store the partial derivative w.r.t. the k-th parameter
+    for k in range(len(x)):
+        x1 = x.copy()
+        x1[k]=x1[k]+h/2
+        x2 = x.copy()
+        x2[k]=x2[k]-h/2
+        t = (fun(x1)[0]-fun(x2)[0])/h
+        g[k]= t
     #------------------------------------------------------------------#
 
     return g
@@ -395,6 +408,10 @@ def affine_corr(I, Im, x, return_transform=True):
 
     #------------------------------------------------------------------#
     # TODO: Implement the missing functionality
+    T= rotate(x[0]).dot(scale(x[1],x[2])).dot(shear(x[3],x[4]))
+    Th=util.t2h(T,SCALING*np.array([x[5],x[6]]))
+    Im_t=image_transform(Im,Th)[0]
+    C=correlation(I,Im_t)
     #------------------------------------------------------------------#
 
     if return_transform:
@@ -425,6 +442,11 @@ def affine_mi(I, Im, x, return_transform=True):
     
     #------------------------------------------------------------------#
     # TODO: Implement the missing functionality
+    T= rotate(x[0]).dot(scale(x[1],x[2])).dot(shear(x[3],x[4])) #transformation matrix
+    Th=util.t2h(T,SCALING*np.array([x[5],x[6]])) #homogenous form of the transformation matrix
+    Im_t=image_transform(Im,Th)[0] #moving image
+    
+    MI=mutual_information(joint_histogram(I,Im_t,NUM_BINS)) 
     #------------------------------------------------------------------#
 
     if return_transform:
