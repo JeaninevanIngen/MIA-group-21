@@ -108,6 +108,14 @@ def cpselect(imagePath1, imagePath2):
 	#if there are no points, raise an exception
 	if not (len(points)> 0):
 		raise Exception("No control points selected.")
+    
+    #if there are too many points selected
+	if (len(points)< 6):
+		raise Exception("More points must be selected")
+    
+    #if there are too few points selected
+	if (len(points)> 6):
+		raise Exception("Less points must be selected.")
 	
 	#subdivide the points into two different arrays. If the current number is even belongs to the first first image, and uneven to the second image. (Assuming the points were entered in the correct order.)
 	#X and Y values are on rows, with each column being a pair of values.
