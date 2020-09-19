@@ -6,84 +6,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import registration as reg
 from IPython.display import display, clear_output
-#add import util file, for cpselect
-import registration_util as util
-
-
-def point_based_registration_demo():
-    # ---------------------------------
-    # Append the following code in jupiter to run:
-    #   %matplotlib inline
-    #   import sys
-    #   sys.path.append(..\code")
-    #   from registration_project import point_based_registration_demo
-    
-    # point_based_registration_demo()
-    # ---------------------------------
-    
-    # read the fixed and moving images, 2x T1 or T1&T2
-    # change these in order to read different images
-    I_path = '../data/image_data/1_1_t1.tif'
-    Im_path = '../data/image_data/1_1_t1_d.tif'
-    
-    X, Xm = util.cpselect(I_path, Im_path)
-
-    print('X:\n{}'.format(X))
-    print('Xm:\n{}'.format(Xm))
-    
-    #gives a matrix: 
-    #X:
-    #[[x1 x2 x3]
-    # [y1 y2 y3]]
-    #Xm:
-    #[[x1m x2m x3m]
-    # [y1m y2m y3m]]
-    
-    #make homogenous coordinates of X and Xm
-    X=util.c2h(X)
-    Xm=util.c2h(Xm)
-
-
-    #calculate the affine transformationmatrix and the fiducial registration error
-    T, Efiducial = reg.ls_affine(X, Xm)
-    
-    #calculate the target registraion error
-    #Etarget=point_based_error(I_path,Im_path,T)
-    X, Xm = util.cpselect(I_path, Im_path)
-    #make homogenous coordinates of X and Xm
-    X=util.c2h(X)
-    Xm=util.c2h(Xm)
-    _, Etarget = reg.ls_affine(X,Xm)
-    
-    print(Efiducial)
-    print(Etarget)
-    
-    #read image
-    Im=plt.imread(Im_path)
-    
-    #Apply the affine transformation to the moving image
-    It, Xt = reg.image_transform(Im, T)
-    
-    #plot figure
-    fig = plt.figure(figsize=(12,5))
-    fig, ax = plt.subplots()
-    
-    ax.set_title("Transformed image with error: Etarget={} Efiducial={}".format(Etarget,Efiducial))
-    ax.set_xlabel('x')
-    ax.set_ylabel('y')
-
-    plt.imshow(It)
-    
-    
+ 
 
 def intensity_based_registration_demo():
     # ---------------------------------
-    # Append the following code in jupiter to run:
-    #   %matplotlib inline
-    #   import sys
-    #   sys.path.append(..\code")
-    #   from registration_project import intensity_based_registration_demo
-    # intensity_based_registration_demo()
+    # perfomes a intensity based registration
+    # using different kinds of similarity measures
+    # to images with the same -and/or different 
+    # modalities.
     # ---------------------------------    
     
     # read the fixed and moving images
