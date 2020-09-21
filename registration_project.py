@@ -18,8 +18,11 @@ def intensity_based_registration_demo():
     
     # read the fixed and moving images
     # change these in order to read different images
-    I = plt.imread('../data/image_data/1_1_t1.tif')
-    Im = plt.imread('../data/image_data/1_1_t1_d.tif')
+    fileI='data/image_data/3_3_t1.tif'
+    fileIM='data/image_data/3_3_t2.tif'
+    
+    I = plt.imread(fileI)
+    Im = plt.imread(fileIM)
 
     # initial values for the parameters
     # we start with the identity transformation
@@ -33,7 +36,7 @@ def intensity_based_registration_demo():
     ###this means that x=np.array([0.,1.,1.,0.,0.,0.,0.])
     ### so make an if else statement
     
-    similarity_function = reg.rigid_corr #change this to one of the followings [reg.rigid_corr, reg.affine_corr, reg.affine_mi]
+    similarity_function = reg.affine_corr #change this to one of the followings [reg.rigid_corr, reg.affine_corr, reg.affine_mi]
     
     
     if similarity_function == reg.rigid_corr:
@@ -50,7 +53,7 @@ def intensity_based_registration_demo():
     fun = lambda x: similarity_function(I, Im, x)
 
     # the learning rate
-    mu = 0.001
+    mu = 0.0004
 
     # number of iterations
     num_iter = 200
@@ -107,5 +110,5 @@ def intensity_based_registration_demo():
         display(fig)
         
         #add saving figure, so the graphics will be saved on your comp
-        fig.savefig('name = '+str(mu)+'integer = '+ str(num_iter) + '.png')
+        fig.savefig('3_3_t1+3_3_t2'+'mu='+str(mu)+'integer = '+str(num_iter)+'_affine_corr'+'.png')
 
