@@ -433,7 +433,7 @@ def affine_mi(I, Im, x, return_transform=True):
     #     are the translation
     # return_transform: Flag for controlling the return values
     # Output:
-    # C - normalized cross-correlation between I and T(Im)
+    # MI - mutual information between I and T(Im)
     # Im_t - transformed moving image T(Im)
     # Th - transformation matrix (only returned if return_transform=True)
 
@@ -450,6 +450,6 @@ def affine_mi(I, Im, x, return_transform=True):
     #------------------------------------------------------------------#
 
     if return_transform:
-        return C, Im_t, Th
+        return MI, Im_t, Th
     else:
-        return C
+        return MI
