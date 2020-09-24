@@ -157,10 +157,13 @@ def ls_affine(X, Xm):
     #------------------------------------------------------------------#
     b1 = np.transpose(X[0,:])
     b2 = np.transpose(X[1,:])
+    
     w1,Ex = ls_solve(A,b1)
     w2,Ey = ls_solve(A,b2)
+    
     E = np.array([[Ex],[Ey]])
-    T = np.identity(np.size(X,1))
+    T = np.identity(np.size(X,0))
+    
     T[0:np.size(w1),0] = w1
     T[0:np.size(w2),1] = w2
     T = np.transpose(T)
