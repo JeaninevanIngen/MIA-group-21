@@ -11,19 +11,13 @@ from IPython.display import display, clear_output
 # define data arrays that contain the unique parts of the filenames of the images
 data_t1     = ['1_1_t1', '1_2_t1', '1_3_t1', 
                '2_1_t1', '2_2_t1', '2_3_t1',
-               '3_1_t1', '3_2_t1', '3_3_t1',
-               '4_1_t1', '4_2_t1', '4_3_t1',
-               '5_1_t1', '5_2_t1', '5_3_t1',]
+               '3_1_t1', '3_2_t1', '3_3_t1']
 data_t1_d   = ['1_1_t1_d', '1_2_t1_d', '1_3_t1_d', 
                '2_1_t1_d', '2_2_t1_d', '2_3_t1_d',
-               '3_1_t1_d', '3_2_t1_d', '3_3_t1_d',
-               '4_1_t1_d', '4_2_t1_d', '4_3_t1_d',
-               '5_1_t1_d', '5_2_t1_d', '5_3_t1_d']
+               '3_1_t1_d', '3_2_t1_d', '3_3_t1_d']
 data_t2     = ['1_1_t2', '1_2_t2', '1_3_t2', 
                '2_1_t2', '2_2_t2', '2_3_t2',
-               '3_1_t2', '3_2_t2', '3_3_t2',
-               '4_1_t2', '4_2_t2', '4_3_t2',
-               '5_1_t2', '5_2_t2', '5_3_t2',]
+               '3_1_t2', '3_2_t2', '3_3_t2']
 
 def get_images(fixedID, movingID):
     # --------------------------------------------------------------------------------------
@@ -144,13 +138,19 @@ def point_based_experiment(fixed, moving, exp, npairs = 3, dist = 'arb'):
         Xfm = util.c2h(Xfm)
         
         # get target points in both the fixed and moving image and store the coordinates in Xt and Xmt respectively
-        Xt, Xtm = util.cpselect(If_path, Im_path, 'target', npairs)
+        Xt, Xtm = util.cpselect(If_path, Im_path, 'target', 3)
         # turn coordinates into homogeneous coordinates
         Xt = util.c2h(Xt)
         Xtm = util.c2h(Xtm)
         
         # define an affine homogeneous transformation matrix T based on the fiducial point pairs
         T, Ef = reg.ls_affine(Xf, Xfm)
+        
+        # singular matrices occur regularly when only 2 point pairs are selected, so to solve that problem:
+        if npairs == 2:
+            # add a small positive number to T to avoid numerical problems (singular matrices)
+            EPSILON = 10e-10
+            T += EPSILON
         
         # calculate regularization error and append it to list with errors of all sets of images
         E = get_error(T, Xt, Xtm)
@@ -187,32 +187,32 @@ def point_based_experiment(fixed, moving, exp, npairs = 3, dist = 'arb'):
 ############################################################################################
 # WORKFLOW POINT_BASED REGISTRATION EXPERIMENTS
 
-# experiment 1: registering T1 and T1 transformed, 2 fiducial and target point pairs
+# experiment 1: registering T1 and T1 transformed, 2 fiducial and 3 target point pairs
 print('Run experiment 1')
 #error1 = point_based_experiment(data_t1, data_t1_d, 1, 2)
 #print('The mean error of experiment 1 is: '+str(error1))
 
-# experiment 2: registering T1 and T1 transformed, 3 fiducial and target point pairs
+# experiment 2: registering T1 and T1 transformed, 3 fiducial and 3 target point pairs
 print('Run experiment 2')
 error2 = point_based_experiment(data_t1, data_t1_d, 2, 3)
 print('The mean error of experiment 2 is: '+str(error2))
 
-# experiment 3: registering T1 and T1 transformed, 4 fiducial and target point pairs
+# experiment 3: registering T1 and T1 transformed, 4 fiducial and 3 target point pairs
 print('Run experiment 3')
 error3 = point_based_experiment(data_t1, data_t1_d, 3, 4)
 print('The mean error of experiment 3 is: '+str(error3))
 
-# experiment 4: registering T1 and T1 transformed, 3 fiducial and target point pairs, fiducial points selected close to each other
+# experiment 4: registering T1 and T1 transformed, 3 fiducial and 3 target point pairs, fiducial points selected close to each other
 print('Run experiment 4, select fiducial points close to each other')
 error4 = point_based_experiment(data_t1, data_t1_d, 4, 3, dist = 'close')
 print('The mean error of experiment 4 is: '+str(error4))
 
-# experiment 5: registering T1 and T1 transformed, 3 fiducial and target point pairs, fiducial points selected far away from each other
+# experiment 5: registering T1 and T1 transformed, 3 fiducial and 3 target point pairs, fiducial points selected far away from each other
 print('Run experiment 5, select fiducial points far away from each other')
 error5 = point_based_experiment(data_t1, data_t1_d, 5, 3, dist = 'far')
 print('The mean error of experiment 5 is: '+str(error5))
 
-# experiment 6: registering T1 and T2, 3 fiducial and target point pairs
+# experiment 6: registering T1 and T2, 3 fiducial and 3 target point pairs
 print('Run experiment 6')
 error6 = point_based_experiment(data_t1, data_t1_d, 6, 3)
 print('The mean error of experiment 6 is: '+str(error6))
