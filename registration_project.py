@@ -209,12 +209,12 @@ print('Run experiment 4, select fiducial points close to each other')
 
 # experiment 5: registering T1 and T1 transformed, 3 fiducial and 3 target point pairs, fiducial points selected far away from each other
 print('Run experiment 5, select fiducial points far away from each other')
-error5 = point_based_experiment(data_t1, data_t1_d, 5, 3, dist = 'far')
-print('The mean error of experiment 5 is: '+str(error5))
+#error5 = point_based_experiment(data_t1, data_t1_d, 5, 3, dist = 'far')
+#print('The mean error of experiment 5 is: '+str(error5))
 
 # experiment 6: registering T1 and T2, 3 fiducial and 3 target point pairs
 print('Run experiment 6')
-error6 = point_based_experiment(data_t1, data_t1_d, 6, 3)
+error6 = point_based_experiment(data_t1, data_t2, 6, 3)
 print('The mean error of experiment 6 is: '+str(error6))
 
 ###########################################################################################
