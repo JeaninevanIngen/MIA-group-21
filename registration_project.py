@@ -35,8 +35,8 @@ def get_images(fixedID, movingID):
     # --------------------------------------------------------------------------------------
     
     # combine strings to form the image path for each corresponding set of images in the fixed and moving set
-    I_path  = 'C:/Users/20183816/Documents/BMT 2020-2021/8DC00 Medical Image Analysis/code/MIA-group-21/data/image_data/'+fixedID+'.tif'
-    Im_path = 'C:/Users/20183816/Documents/BMT 2020-2021/8DC00 Medical Image Analysis/code/MIA-group-21/data/image_data/'+movingID+'.tif'
+    I_path  = 'C:/Users/s166079/Documents/Medical image analysis/8dc00/MIA-Group-21/MIA-group-21/data/image_data/'+fixedID+'.tif'
+    Im_path = 'C:/Users/s166079/Documents/Medical image analysis/8dc00/MIA-Group-21/MIA-group-21/data/image_data/'+movingID+'.tif'
         
     # read in the fixed and moving images
     Im = plt.imread(Im_path)
@@ -194,18 +194,18 @@ print('Run experiment 1')
 
 # experiment 2: registering T1 and T1 transformed, 3 fiducial and 3 target point pairs
 print('Run experiment 2')
-error2 = point_based_experiment(data_t1, data_t1_d, 2, 3)
-print('The mean error of experiment 2 is: '+str(error2))
+#error2 = point_based_experiment(data_t1, data_t1_d, 2, 3)
+#print('The mean error of experiment 2 is: '+str(error2))
 
 # experiment 3: registering T1 and T1 transformed, 4 fiducial and 3 target point pairs
 print('Run experiment 3')
-error3 = point_based_experiment(data_t1, data_t1_d, 3, 4)
-print('The mean error of experiment 3 is: '+str(error3))
+#error3 = point_based_experiment(data_t1, data_t1_d, 3, 4)
+#print('The mean error of experiment 3 is: '+str(error3))
 
 # experiment 4: registering T1 and T1 transformed, 3 fiducial and 3 target point pairs, fiducial points selected close to each other
 print('Run experiment 4, select fiducial points close to each other')
-error4 = point_based_experiment(data_t1, data_t1_d, 4, 3, dist = 'close')
-print('The mean error of experiment 4 is: '+str(error4))
+#error4 = point_based_experiment(data_t1, data_t1_d, 4, 3, dist = 'close')
+#print('The mean error of experiment 4 is: '+str(error4))
 
 # experiment 5: registering T1 and T1 transformed, 3 fiducial and 3 target point pairs, fiducial points selected far away from each other
 print('Run experiment 5, select fiducial points far away from each other')
