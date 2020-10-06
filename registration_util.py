@@ -65,12 +65,13 @@ def plot_object(ax, X):
     ax.plot(X[0,:], X[1,:], linewidth=2);
 
 
-def cpselect(imagePath1, imagePath2):
+def cpselect(imagePath1, imagePath2, point = 'fiducial', npairs = 3):
 	# Pops up a matplotlib window in which to select control points on the two images given as input.
 	#
 	# Input:
     # imagePath1 - fixed image path
     # imagePath2 - moving image path
+    # npairs     - number of point pairs to be selected
     # Output:
     # X - control points in the fixed image
     # Xm - control points in the moving image
@@ -84,8 +85,8 @@ def cpselect(imagePath1, imagePath2):
     
 	#set up the overarching window
 	fig, axes = plt.subplots(1,2)
-	fig.figsize = [16,9]
-	fig.suptitle("Left Mouse Button to create a point.\n Right Mouse Button/Delete/Backspace to remove the newest point.\n Middle Mouse Button/Enter to finish placing points.\n First select a point in Image 1 and then its corresponding point in Image 2.")
+	fig.figsize = [20,15]
+	fig.suptitle("Select "+str(npairs)+" "+point+" point pairs. \n \n Left Mouse Button to create a point.\n Right Mouse Button/Delete/Backspace to remove the newest point.\n Middle Mouse Button/Enter to finish placing points.\n First select a point in Image 1 and then its corresponding point in Image 2.")
 	
 	#plot the images
 	axes[0].imshow(image1)
@@ -110,11 +111,11 @@ def cpselect(imagePath1, imagePath2):
 		raise Exception("No control points selected.")
     
     #if there are too many points selected
-	if (len(points)< 6):
+	if (len(points)< npairs*2):
 		raise Exception("More points must be selected")
     
     #if there are too few points selected
-	if (len(points)> 6):
+	if (len(points)> npairs*2):
 		raise Exception("Less points must be selected.")
 	
 	#subdivide the points into two different arrays. If the current number is even belongs to the first first image, and uneven to the second image. (Assuming the points were entered in the correct order.)
