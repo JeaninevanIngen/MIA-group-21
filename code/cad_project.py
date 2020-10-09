@@ -51,6 +51,10 @@ def nuclei_measurement():
     # TODO: Implement training of a linear regression model for measuring
     # the area of nuclei in microscopy images. Then, use the trained model
     # to predict the areas of the nuclei in the test dataset.
+    trainXones=util.addones(training_x)
+    theta,_ = reg.ls_solve(trainXones,training_y)
+    
+    predicted_y=util.addones(test_x).dot(theta)
     
     #---------------------------------------------------------------------#
 
@@ -67,11 +71,18 @@ def nuclei_measurement():
     #---------------------------------------------------------------------#
     # TODO: Train a model with reduced dataset size (e.g. every fourth
     # training sample).
+    trainXones=trainXones[::4]
+    training_y=training_y[::4]
+    
+    theta_smalldata,_ = reg.ls_solve(trainXones,training_y)
+    
+    predicted_y_smalldata=util.addones(test_x).dot(theta_smalldata)
+    
     #---------------------------------------------------------------------#
 
     # visualize the results
     ax2  = fig2.add_subplot(122)
-    line2, = ax2.plot(predicted_y, test_y, ".g", markersize=3)
+    line2, = ax2.plot(predicted_y_smalldata, test_y, ".g", markersize=3)
     ax2.grid()
     ax2.set_xlabel('Area')
     ax2.set_ylabel('Predicted Area')
@@ -119,6 +130,19 @@ def nuclei_classification():
     # (batch_size) and number of iterations (num_iterations), as well as
     # initial values for the model parameters (Theta) that will result in
     # fast training of an accurate model for this classification problem.
+    mu = 0.01
+    batch_size = 500 
+    num_iterations = 2000 
+    
+    # Theta = initialize, so begin with zeros
+    # furthermore it is a vector, with as many columns as the trainingset
+    # note that there is the addones
+    # so, shape of the vector is: the amount of columns of the trainingset
+    # plus 1 as the amount of rows by 1 column. 
+    
+    #Theta = np.zeros((np.shape(training_x)[1])+1,1)
+    Theta = np.zeros((len(training_x[1]))+1,1)
+    
     #-------------------------------------------------------------------#
 
     xx = np.arange(num_iterations)

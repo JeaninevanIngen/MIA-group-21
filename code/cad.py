@@ -18,7 +18,7 @@ def sigmoid(a):
     #  function must also work for vector inputs: for example if the input
     #  is [1 -1 2] the output should be a vector of the same size with the
     #  sigmoid values for every element of the input vector.
-    s=1/(1+exp(-a))
+    s=1/(1+np.exp(-a))
     #-------------------------------------------------------------------#
 
     return s

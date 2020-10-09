@@ -56,10 +56,6 @@ def linear_regression():
     validationXones = util.addones(validationX)
     validationY = validation_data[:,1].reshape(-1,1)
     
-    #rewrite testdata
-    testX = test_data[:,0].reshape(-1,1)
-    testXones = util.addones(testX)
-    testY = test_data[:,1].reshape(-1,1)
     
     #---------------------------------------------------------------------#
 
@@ -86,6 +82,8 @@ def linear_regression():
 
     #---------------------------------------------------------------------#
     # TODO: Compute the error for the trained model.
+    testXones = util.addones(testX)
+    
     E_validation = np.sum(((validationXones.dot(theta))-validationY)**2)/np.shape(validationX)[0]
     E_test = np.sum(((testXones.dot(theta))-testY)**2)/np.shape(testX)[0]
     #---------------------------------------------------------------------#
@@ -99,7 +97,7 @@ def quadratic_regression():
     
     #add a row x1 with x0^2, and y stays the same
     
-        # load the training, validation and testing datasets
+    # load the training, validation and testing datasets
     fn1 = '../data/linreg_ex_test.txt'
     fn2 = '../data/linreg_ex_train.txt'
     fn3 = '../data/linreg_ex_validation.txt'
@@ -126,9 +124,10 @@ def quadratic_regression():
     # matrix X in a similar way to the c2h() function used in registration.
 
     trainX = train_data[:,0].reshape(-1,1)
-
-    X1=trainX**2
-    trainX = np.concatenate((trainX,X1), axis=1)
+    #if len(trainX.shape) < 2:
+    #    trainX = trainX.reshape(-1,1)
+    X2=np.array(trainX**2)
+    trainX = np.concatenate((trainX,X2), axis=1)
     trainXones = util.addones(trainX)
     trainY = train_data[:,1].reshape(-1,1)
     
@@ -137,17 +136,13 @@ def quadratic_regression():
     
     #rewrite validation data
     validationX = validation_data[:,0].reshape(-1,1)
-    X1=validationX**2
-    validationX = np.concatenate((validationX,X1), axis=1)
+    #if len(validationX.shape) < 2:
+    #    validationX = validationX.reshape(-1,1)
+    X2=np.array(validationX**2)
+    validationX = np.concatenate((validationX,X2), axis=1)
     validationXones = util.addones(validationX)
     validationY = validation_data[:,1].reshape(-1,1)
     
-    #rewrite testdata
-    testX = test_data[:,0].reshape(-1,1)
-    X1=testX**2
-    testX = np.concatenate((testX,X1), axis=1)
-    testXones = util.addones(testX)
-    testY = test_data[:,1].reshape(-1,1)
     
     #---------------------------------------------------------------------#
 
@@ -161,6 +156,13 @@ def quadratic_regression():
     ax1.set_title('Training set')
 
     testX = test_data[:,0].reshape(-1,1)
+    #add the quadratic---------------------------------------------------#
+    #if len(testX.shape) < 2:
+    #    testX = testX.reshape(-1,1)
+    X2=np.array(testX**2)
+    testX = np.concatenate((testX,X2), axis=1)
+    testXones = util.addones(testX)
+    #---------------------------------------------------------------------#
     testY = test_data[:,1].reshape(-1,1)
 
     fig2 = plt.figure(figsize=(10,10))
@@ -174,11 +176,11 @@ def quadratic_regression():
 
     #---------------------------------------------------------------------#
     # TODO: Compute the error for the trained model.
+    
     E_validation = np.sum(((validationXones.dot(theta))-validationY)**2)/np.shape(validationX)[0]
     E_test = np.sum(((testXones.dot(theta))-testY)**2)/np.shape(testX)[0]
     #---------------------------------------------------------------------#
-    
-    #---------------------------------------------------------------------#
+
 
     return E_validation, E_test
 
