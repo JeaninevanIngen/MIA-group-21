@@ -56,6 +56,10 @@ def nuclei_measurement():
     
     predicted_y=util.addones(test_x).dot(theta)
     
+    # Computation af the validation model
+    E_validation = np.sum(((trainXones.dot(theta))-training_y)**2)/np.shape(training_x)[0]
+    print( 'Error of the model:', E_validation)
+    
     #---------------------------------------------------------------------#
 
     # visualize the results
@@ -78,6 +82,9 @@ def nuclei_measurement():
     
     predicted_y_smalldata=util.addones(test_x).dot(theta_smalldata)
     
+    # Computation af the validation model with reduced samples
+    E_validation_reduced = np.sum(((trainXones.dot(theta_smalldata))-training_y)**2)/np.shape(training_x)[0]
+    print ('Error of model with reduced samples:' , E_validation_reduced)
     #---------------------------------------------------------------------#
 
     # visualize the results
