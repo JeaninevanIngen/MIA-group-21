@@ -98,7 +98,7 @@ def nuclei_measurement():
 
 def nuclei_classification():
     ## dataset preparation
-    fn = 'data/nuclei_data_classification.mat'
+    fn = '../data/nuclei_data_classification.mat'
     mat = scipy.io.loadmat(fn)
 
     test_images = mat["test_images"] # (24, 24, 3, 20730)
@@ -139,7 +139,7 @@ def nuclei_classification():
     # fast training of an accurate model for this classification problem.
     mu = 0.0001
     batch_size = 100 
-    num_iterations = 4000
+    num_iterations = 1000
     
     # Theta = initialize, so begin with zeros
     # furthermore it is a vector, with as many columns as the trainingset
