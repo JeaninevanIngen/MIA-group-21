@@ -96,17 +96,22 @@ def nuclei_measurement():
     ax2.set_title('Training with smaller sample')
 
 
-def nuclei_classification():
+def nuclei_classification(it, mu, batch, theta):
+    #the inputs it, mu, batch, and theta are used to define the hyperparameters below
+    
     ## dataset preparation
     fn = '../data/nuclei_data_classification.mat'
     mat = scipy.io.loadmat(fn)
 
+    #reduction factor for the training set, set to 1 to use the full training set
+    reduction = 1
+    
     test_images = mat["test_images"] # (24, 24, 3, 20730)
     test_y = mat["test_y"] # (20730, 1)
-    training_images = mat["training_images"] # (24, 24, 3, 14607)
-    training_y = mat["training_y"] # (14607, 1)
-    validation_images = mat["validation_images"] # (24, 24, 3, 14607)
-    validation_y = mat["validation_y"] # (14607, 1)
+    training_images = mat["training_images"][:,:,:,:int(14607*reduction)] # (24, 24, 3, 14607)
+    training_y = mat["training_y"][:int(14607*reduction),:] # (14607, 1)
+    validation_images = mat["validation_images"] # (24, 24, 3, 7307)
+    validation_y = mat["validation_y"] # (7307, 1)
 
     ## dataset preparation
     imageSize = training_images.shape
@@ -132,35 +137,18 @@ def nuclei_classification():
     test_x = test_x / np.tile(stdTrain, (test_x.shape[0], 1))
 
     ## training linear regression model
-    #-------------------------------------------------------------------#
-    # TODO: Select values for the learning rate (mu), batch size
-    # (batch_size) and number of iterations (num_iterations), as well as
-    # initial values for the model parameters (Theta) that will result in
-    # fast training of an accurate model for this classification problem.
-    mu = 0.0001
-    batch_size = 100 
-    num_iterations = 40#00
-    
-    # Theta = initialize, so begin with zeros
-    # furthermore it is a vector, with as many columns as the trainingset
-    # note that there is the addones
-    # so, shape of the vector is: the amount of columns of the trainingset
-    # plus 1 as the amount of rows by 1 column. 
-    
-    #Theta = np.zeros((np.shape(training_x)[1])+1,1)
-    
-    #For a theta with random values between 0.0 and 1.0, 0.0 included.
-    Theta = np.random.random_sample((np.shape(training_x)[1]+1,1))
-    
-    #Theta = 0.0001*np.ones((training_x.shape[1]+1,1))
-    
-    #-------------------------------------------------------------------#
+    num_iterations = it
+    mu = mu
+    batch_size = batch
+    Theta = theta*np.ones((training_x.shape[1]+1,1))
 
     xx = np.arange(num_iterations)
     loss = np.empty(*xx.shape)
     loss[:] = np.nan
     validation_loss = np.empty(*xx.shape)
     validation_loss[:] = np.nan
+    test_loss = np.empty(*xx.shape)
+    test_loss[:] = np.nan
     g = np.empty(*xx.shape)
     g[:] = np.nan
 
@@ -171,7 +159,7 @@ def nuclei_classification():
     ax2.set_title('mu = '+str(mu))
     h1, = ax2.plot(xx, loss, linewidth=2) #'Color', [0.0 0.2 0.6],
     h2, = ax2.plot(xx, validation_loss, linewidth=2) #'Color', [0.8 0.2 0.8],
-    ax2.set_ylim(0, 0.7)
+    ax2.set_ylim(0, 1.5)
     ax2.set_xlim(0, num_iterations)
     ax2.grid()
 
@@ -184,6 +172,7 @@ def nuclei_classification():
 
         training_x_ones = util.addones(training_x[idx,:])
         validation_x_ones = util.addones(validation_x)
+        test_x_ones = util.addones(test_x)
 
         # the loss function for this particular batch
         loss_fun = lambda Theta: cad.lr_nll(training_x_ones, training_y[idx], Theta)
@@ -192,10 +181,12 @@ def nuclei_classification():
         # instead of the numerical gradient, we compute the gradient with
         # the analytical expression, which is much faster
         Theta_new = Theta - mu*cad.lr_agrad(training_x_ones, training_y[idx], Theta).T
-
+        
+        #compute losses
         loss[k] = loss_fun(Theta_new)/batch_size
         validation_loss[k] = cad.lr_nll(validation_x_ones, validation_y, Theta_new)/validation_x.shape[0]
-
+        test_loss[k] = cad.lr_nll(test_x_ones, test_y, Theta_new)/test_x.shape[0]
+        
         # visualize the training
         h1.set_ydata(loss)
         h2.set_ydata(validation_loss)
@@ -210,3 +201,72 @@ def nuclei_classification():
         display(fig)
         clear_output(wait = True)
         plt.pause(.005)
+        
+    #save figure for future reference
+    fig.savefig('results_cad/'+'it_'+str(it)+'_mu_'+str(mu)+'_batch_'+str(batch)+'_theta_'+str(theta)+'.png') 
+    
+    # save losses for future reference
+    error_file = open("losses for each experiment.txt")
+    error_list = error_file.readlines()
+    error_file.close()
+    
+    error_list.append('it = '+str(it)+'   mu = '+str(mu)+'   batch = '+str(batch)+'   theta = '+str(theta)+'\n'+'  training loss: '+str(loss[-1])+'\n'+'  validation loss: '+str(validation_loss[-1])+'\n')
+    error_list_new = "".join(error_list)
+    
+    error_file = open("losses for each experiment.txt", 'w')
+    error_file.write(error_list_new)
+    error_file.close()
+    
+    return test_loss[-1]
+###############################################################################
+####################### Experiments Logistic Regression #######################
+# set standard values for parameters
+mu = 0.001
+batch = 30
+theta = 1
+it = 300
+
+## The following lines of code were used to search for the optimal values of the hyperparameters
+## The validation losses are written to the file 'losses for each experiment.txt'
+## In this file, the validation losses were compared manually, and the parameter values for which the lowest 
+## validation losses were computed, are selected
+## These values should then be changed manually in this script
+
+# rough search for optimal value of theta
+for theta1 in [0.001, 0.01, 0.1, 0.2, 0.3, 0.6, 0.8, 1, 2, 3, 6, 8, 10]:
+    nuclei_classification(it, mu, batch, theta1)
+    
+# fine search for optimal value of theta, searching based on results of rough search
+for theta1 in [0.0001, 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.008, 0.3, 0.4, 0.5]:
+    nuclei_classification(it, mu, batch, theta1)
+
+# set standard value for theta to the found optimal value
+theta = 0.003
+
+# search for optimal value of the number of iterations
+for it1 in [300, 350, 400, 450, 500, 550, 600, 650, 700]:
+    nuclei_classification(it1, mu, batch, theta)
+    
+# set standard value for it to the found optimal value
+it = 300;
+
+# search for the optimal value of mu
+for mu1 in [0.00001, 0.0001, 0.001, 0.01, 0.1]:
+    nuclei_classification(it, mu1, batch, theta)
+
+# set standard value for mu to the found optimal value
+mu = 0.001
+
+# search for optimal value of batch size
+for batch1 in [10, 20, 30, 50, 75, 100]:
+    nuclei_classification(it, mu, batch1, theta)
+
+# set standard value of batch to the found optimal value
+batch = 20
+
+# perform the training with the selected optimal values, to get the classification accuracy, which is the test loss
+print('The classificatoin accuracy for the final model is:')
+print(nuclei_classification(it,mu,batch,theta))
+
+##################### End of experiments Logistic Regression ##################
+###############################################################################
