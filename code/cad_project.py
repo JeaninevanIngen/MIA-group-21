@@ -95,6 +95,7 @@ def nuclei_measurement():
     ax2.set_ylabel('Predicted Area')
     ax2.set_title('Training with smaller sample')
 
+print(nuclei_measurement())
 
 def nuclei_classification(it, mu, batch, theta):
     #the inputs it, mu, batch, and theta are used to define the hyperparameters below
